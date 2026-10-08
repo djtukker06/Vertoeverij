@@ -1,0 +1,5 @@
+node_modules
+dist
+.DS_Store
+# Aangeleverde klantdocumenten (briefing, teksten): niet in de repo
+.claude/_bron

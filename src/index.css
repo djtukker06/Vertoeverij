@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+/* Huisstijl Vertoeverij De Zandloper (brandbook): zwart #101211, donkergroen #1F3D2B, saliegroen #677D64,
+   beige #F6F0DF. Geen felle kleuren. Koppen Higuen, tekst Montserrat. */
+@font-face {
+  font-family: "Higuen";
+  src: url("./assets/fonts/higuen-serif.woff2") format("woff2");
+  font-weight: 300 700; /* één snede; alle gewichten wijzen naar hetzelfde bestand (geen nep-vet) */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tokens: de namen uit het ontwerp blijven, de waarden komen uit het brandbook */
+@theme {
+  --font-display: "Higuen", "Times New Roman", serif;
+  --font-sans: "Montserrat Variable", system-ui, sans-serif;
+
+  --color-forest-950: #1f3d2b; /* donkergroen: kaarten, knoppen, koppen */
+  --color-forest-900: #2a4a36; /* iets lichter groen: hover, foto-achtergrond */
+  --color-forest-700: #677d64; /* saliegroen: iconen, details */
+  --color-bone: #f6f0df; /* beige: tekst op groen, lichte knoppen */
+  --color-bone-muted: #d9d4c3;
+  --color-amber: #677d64; /* accent (focus, fouten, details) = saliegroen, geen felle kleur */
+  --color-free: #dfe5d4; /* vrije dag in agenda's: lichte salie */
+  --color-ink: #101211; /* zwart uit het palet */
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  /* Pagina-achtergrond rond de hero-kaart: beige uit het brandbook */
+  --surface: #F6F0DF;
+  --on-surface: var(--color-ink);
+  /* Lichte panelen op beige */
+  --panel: #FBF8EF;
+}
+
+/* Higuen is een display-serif met van zichzelf krappe letters: de strakke tracking van het grotesk-ontwerp vervalt */
+.font-display {
+  letter-spacing: -0.01em !important;
+  font-synthesis: none;
+}
+
+/* Player komt zacht in beeld boven de statische foto */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-fade-in {
+    animation: hero-fade-in 1.2s var(--ease-out-soft) both;
+  }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-amber);
+    outline-offset: 3px;
+  }
+}
+
+/* Glas-paneel (web-benadering, geen officieel Apple Liquid Glass) */
+.glass {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05)), rgb(22 35 27 / 0.28);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 20px 50px rgb(16 28 20 / 0.25);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: rgb(22 35 27 / 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+
+/* Scroll-stage hero: kaart pint, opent naar fullscreen, volgende sectie schuift eroverheen.
+   Zelfde query als PIN_QUERY in Hero.tsx. */
+@media (min-width: 768px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  .hero-track {
+    height: 200dvh; /* 100dvh pin + 100dvh waarin de volgende sectie eroverheen schuift */
+  }
+  .hero-pin {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .after-hero {
+    margin-top: -100dvh;
+    border-radius: 28px 28px 0 0;
+  }
+}
+
+/* Bezette nachten in de beschikbaarheidskalender: arcering leest als "dicht", ook zonder kleur */
+.booked-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(22 35 27 / 0.1) 0 1.5px,
+    transparent 1.5px 6px
+  );
+  background-color: rgb(22 35 27 / 0.03);
+}
+
+/* Reviews-carrousel: kaarten vervagen naar de randen */
+@media (min-width: 768px) {
+  .reviews-track {
+    mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+  }
+}
+
+/* ---------- Gecontroleerde ontwerpopties (in WordPress: Heidelust > Instellingen > Ontwerp) ----------
+   Standaardwaarden = het ontwerp van de Vite-site. Alleen vaste sets, zodat het ontwerp heel blijft. */
+
+/* Sectie-afstand: .hl-sy = boven en onder, .hl-sb = alleen onder.
+   Regel: twee lichte secties na elkaar delen één afstand, dus de tweede krijgt .hl-sb (anders dubbel wit). */
+:root {
+  --hl-section-y: 4rem;
+}
+@media (min-width: 768px) {
+  :root {
+    --hl-section-y: 5.5rem;
+  }
+}
+:root[data-spacing="compact"] {
+  --hl-section-y: 3rem;
+}
+:root[data-spacing="ruim"] {
+  --hl-section-y: 5rem;
+}
+@media (min-width: 768px) {
+  :root[data-spacing="compact"] {
+    --hl-section-y: 4rem;
+  }
+  :root[data-spacing="ruim"] {
+    --hl-section-y: 7.5rem;
+  }
+}
+.hl-sy {
+  padding-block: var(--hl-section-y);
+}
+.hl-sb {
+  padding-bottom: var(--hl-section-y);
+}
+
+/* Kleurpaletten: vervangen alleen de tokens, de opbouw blijft gelijk */
+:root[data-palette="nacht"] {
+  --color-forest-950: #141b26;
+  --color-forest-900: #1d2735;
+  --color-forest-700: #34465c;
+  --color-free: #dde4ee;
+}
+:root[data-palette="antraciet"] {
+  --color-forest-950: #1b1c1d;
+  --color-forest-900: #262829;
+  --color-forest-700: #4a4d4f;
+  --color-free: #e3e4e2;
+}
+
+/* Accentkleur (focusrand en kleine details) */
+:root[data-accent="terracotta"] {
+  --color-amber: #c9774f;
+}
+:root[data-accent="mos"] {
+  --color-amber: #9db37a;
+}
+
+/* Koplettertype: alleen meegeleverde fonts */
+:root[data-heading-font="geist"] {
+  --font-display: "Geist Variable", system-ui, sans-serif;
+}
