@@ -1,15 +1,25 @@
+import { useId, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Bathtub, Bed, Check, Couch, Tree, type Icon } from "@phosphor-icons/react";
+import { Plus } from "@phosphor-icons/react";
 import { SectionHeading } from "../page/SectionHeading";
 import { AMENITIES } from "../../lib/house";
-import { asset } from "../../lib/config";
 
 const ease = [0.16, 1, 0.3, 1] as const;
-const ICONS: Icon[] = [Couch, Bed, Tree, Bathtub];
+const pad = (n: number) => String(n).padStart(2, "0");
 
-// Voorzieningen per ruimte: kop en buitenfoto links, vier lichte panelen rechts.
+// Voorzieningen als index: links één grote foto die meewisselt, rechts de vier groepen als genummerde regels.
+// De laatst geopende groep bepaalt de foto (ook als je hem weer dichtklapt). Op mobiel staat de foto in de open groep zelf.
 export function Amenities() {
   const reduce = useReducedMotion();
+  const id = useId();
+  const [open, setOpen] = useState<number | null>(0);
+  const [shown, setShown] = useState(0);
+
+  function toggle(i: number) {
+    if (open === i) return setOpen(null);
+    setOpen(i);
+    setShown(i);
+  }
   const fadeUp = (delay = 0) =>
     reduce
       ? {}
@@ -22,55 +32,107 @@ export function Amenities() {
 
   return (
     <section aria-labelledby="voorzieningen-titel" className="px-[1.875rem] hl-sb md:px-12">
-      <div className="grid grid-cols-1 gap-3 md:gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
-        <div className="flex flex-col gap-8 lg:pr-8">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-x-16">
+        <motion.figure
+          {...fadeUp(0.05)}
+          className="relative isolate hidden overflow-hidden rounded-[20px] bg-forest-900 lg:sticky lg:top-8 lg:col-span-6 lg:block lg:h-[min(82svh,46rem)]"
+        >
+          {AMENITIES.map((group, i) => (
+            <img
+              key={group.title}
+              src={group.image}
+              alt={i === shown ? group.alt : ""}
+              aria-hidden={i !== shown}
+              loading="lazy"
+              decoding="async"
+              className={`absolute inset-0 -z-10 size-full object-cover transition-[opacity,transform] duration-700 ease-(--ease-out-soft) motion-reduce:transition-none ${
+                i === shown ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"
+              }`}
+            />
+          ))}
+          <figcaption className="glass absolute bottom-5 left-5 flex items-center gap-3 rounded-full py-2 pr-4 pl-2 text-[0.8125rem] text-bone">
+            <span className="rounded-full bg-bone px-2.5 py-0.5 font-medium text-forest-950 tabular-nums">
+              {pad(shown + 1)}/{pad(AMENITIES.length)}
+            </span>
+            <span className="font-medium">{AMENITIES[shown].title}</span>
+          </figcaption>
+        </motion.figure>
+
+        <div className="lg:col-span-6">
           <SectionHeading
             id="voorzieningen-titel"
             title="Dit vind je bij De Zandloper"
             text="Of je nu een paar dagen wilt wandelen en fietsen of even weg wilt uit de drukte: hier heb je de ruimte."
             align="left"
           />
-          <motion.figure {...fadeUp(0.05)} className="relative isolate mt-auto min-h-[260px] flex-1 overflow-hidden rounded-[20px] bg-forest-900 lg:min-h-[300px]">
-            <img
-              src={asset("/foto/accommodatie/buitenhaard.webp")}
-              alt="Buitenhaard met barbecue op het overdekte terras"
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 -z-10 size-full object-cover"
-            />
-            <figcaption className="glass absolute bottom-4 left-4 rounded-full px-4 py-2 text-[0.8125rem] font-medium text-bone">
-              Buitenhaard en barbecue
-            </figcaption>
-          </motion.figure>
-        </div>
 
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4">
-          {AMENITIES.map((group, i) => {
-            const GroupIcon = ICONS[i % ICONS.length];
-            return (
-              <motion.li
-                key={group.title}
-                {...fadeUp(0.08 + i * 0.06)}
-                className="rounded-[20px] border border-forest-950/8 bg-[var(--panel)] p-6 text-forest-950 md:p-7"
-              >
-                <div className="flex items-center gap-3">
-                  <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-forest-950/[0.06] text-forest-700">
-                    <GroupIcon size={20} />
-                  </span>
-                  <h3 className="font-display text-lg font-medium tracking-[-0.03em]">{group.title}</h3>
-                </div>
-                <ul className="mt-5 flex flex-col gap-3 border-t border-forest-950/8 pt-5">
-                  {group.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm leading-[1.5] text-forest-950/80">
-                      <Check size={15} aria-hidden className="mt-[3px] shrink-0 text-forest-700" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.li>
-            );
-          })}
-        </ul>
+          <motion.ul {...fadeUp(0.1)} className="mt-10 border-t border-forest-950/10 md:mt-12">
+            {AMENITIES.map((group, i) => {
+              const isOpen = i === open;
+              const buttonId = `${id}-knop-${i}`;
+              const panelId = `${id}-paneel-${i}`;
+              return (
+                <li key={group.title} className="border-b border-forest-950/10">
+                  <h3>
+                    <button
+                      id={buttonId}
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => toggle(i)}
+                      className="group grid w-full cursor-pointer grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center py-5 text-left md:grid-cols-[3.5rem_minmax(0,1fr)_auto] md:py-6"
+                    >
+                      <span className="text-[0.8125rem] text-forest-700 tabular-nums">{pad(i + 1)}</span>
+                      <span
+                        className={`font-display text-[clamp(1.625rem,2.6vw,2.25rem)] leading-tight transition-colors duration-300 ${
+                          isOpen ? "text-forest-950" : "text-forest-950/40 group-hover:text-forest-950/70"
+                        }`}
+                      >
+                        {group.title}
+                      </span>
+                      <span
+                        aria-hidden
+                        className={`grid size-9 place-items-center rounded-full border transition-[transform,background-color,border-color,color] duration-300 ${
+                          isOpen ? "rotate-45 border-forest-950 bg-forest-950 text-bone" : "border-forest-950/15 text-forest-950"
+                        }`}
+                      >
+                        <Plus size={16} />
+                      </span>
+                    </button>
+                  </h3>
+                  <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    inert={!isOpen}
+                    className={`grid transition-[grid-template-rows] duration-500 ease-(--ease-out-soft) motion-reduce:transition-none ${
+                      isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="pb-7 md:pl-14">
+                        <img
+                          src={group.image}
+                          alt={group.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className="mb-5 aspect-[16/10] w-full rounded-2xl object-cover lg:hidden"
+                        />
+                        <ul className="grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+                          {group.items.map((item) => (
+                            <li key={item} className="border-t border-forest-950/8 py-3 text-sm leading-[1.5] text-forest-950/75">
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </motion.ul>
+        </div>
       </div>
     </section>
   );

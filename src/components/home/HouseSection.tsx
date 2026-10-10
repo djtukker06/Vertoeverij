@@ -1,11 +1,49 @@
+import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { ArrowLeft, ArrowRight, Bathtub, Bed, Drop, SunHorizon, UsersThree, type Icon } from "@phosphor-icons/react";
 import { HOUSE_FACTS, ROOMS, type Room } from "../../lib/house";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-// Eerste sectie na de hero: het huis zelf, kamer voor kamer in een fotobento, met de kerncijfers eronder.
+const FACT_ICONS: Record<string, Icon> = {
+  slaapkamers: Bed,
+  badkamers: Bathtub,
+  personen: UsersThree,
+  terras: SunHorizon,
+  wellness: Drop,
+};
+
+// Eerste sectie na de hero: kop links, intro rechts, kerncijfers op één regel eronder,
+// daaronder alle ruimtes in één rij kleine foto's met het onderschrift onder de foto.
+// Onder lg is die rij een carrousel (veegbaar, met pijlen en streepjes zoals bij Reviews).
 export function HouseSection() {
   const reduce = useReducedMotion();
+  const track = useRef<HTMLUListElement>(null);
+  const [active, setActive] = useState(0);
+
+  // Startpositie van een kaart in de rij (kaarten klikken links vast, na de zijmarge)
+  const slideLeft = (el: HTMLUListElement, item: HTMLElement) => item.offsetLeft - parseFloat(getComputedStyle(el).paddingLeft);
+
+  // Actieve kaart = de kaart die het dichtst bij de linkerkant staat; helemaal rechts = de laatste
+  function onScroll() {
+    const el = track.current;
+    if (!el) return;
+    const items = Array.from(el.children) as HTMLElement[];
+    if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 2) return setActive(items.length - 1);
+    let nearest = 0;
+    items.forEach((item, i) => {
+      if (Math.abs(slideLeft(el, item) - el.scrollLeft) < Math.abs(slideLeft(el, items[nearest]) - el.scrollLeft)) nearest = i;
+    });
+    setActive(nearest);
+  }
+
+  function goTo(index: number) {
+    const el = track.current;
+    const item = el?.children[index] as HTMLElement | undefined;
+    if (!el || !item) return;
+    el.scrollTo({ left: slideLeft(el, item), behavior: reduce ? "auto" : "smooth" });
+  }
+
   const fadeUp = (delay = 0) =>
     reduce
       ? {}
@@ -15,70 +53,109 @@ export function HouseSection() {
           viewport: { once: true, amount: 0.2 },
           transition: { duration: 0.9, ease, delay },
         };
-  const [living, ...rest] = ROOMS;
 
   return (
-    <section id="het-huis" aria-labelledby="het-huis-titel" className="relative isolate overflow-hidden px-[1.875rem] hl-sy md:px-12">
-      {/* Statisch merkwoord achter de kop. Bewust zonder scroll-animatie. */}
-      <p
-        aria-hidden
-        className="pointer-events-none absolute top-8 left-1/2 -z-10 -translate-x-1/2 font-display text-[clamp(6rem,19vw,17rem)] leading-[0.8] font-semibold tracking-[-0.05em] whitespace-nowrap text-forest-950/[0.04] select-none md:top-12"
-      >
-        Vertoeverij
-      </p>
-
-      <motion.div {...fadeUp()} className="mx-auto max-w-2xl text-center">
+    <section id="het-huis" aria-labelledby="het-huis-titel" className="px-[1.875rem] hl-sy md:px-12">
+      <motion.div {...fadeUp()} className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end lg:gap-x-12 lg:gap-y-8">
         <h2
           id="het-huis-titel"
-          className="font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.08] font-medium tracking-[-0.035em] text-balance text-forest-950"
+          className="font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.08] font-medium text-balance text-forest-950 lg:col-span-6"
         >
           Comfortabel verblijven in het buitengebied
         </h2>
-        <p className="mx-auto mt-4 max-w-[46ch] text-sm leading-[1.65] text-forest-950/65">
+        <p className="max-w-[46ch] text-sm leading-[1.65] text-forest-950/65 lg:col-span-5 lg:col-start-8">
           Een ruim appartement voor maximaal vier personen, met twee slaapkamers die elk een eigen badkamer hebben.
         </p>
+        <dl className="grid grid-cols-2 gap-x-5 gap-y-2.5 border-t border-forest-950/10 pt-5 text-[0.8125rem] text-forest-950 sm:flex sm:flex-wrap md:gap-x-8 lg:col-span-12 lg:gap-x-10">
+          {HOUSE_FACTS.map((f) => {
+            const FactIcon = FACT_ICONS[f.label];
+            return (
+              <div key={f.label} className="flex items-center gap-2">
+                {FactIcon && <FactIcon size={18} aria-hidden className="text-forest-700" />}
+                <dt className="sr-only">{f.label}</dt>
+                <dd>
+                  <span className="font-medium">{f.value}</span> {f.label}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
       </motion.div>
 
-      <ul className="mt-10 grid grid-cols-2 gap-3 md:mt-12 md:gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] lg:grid-rows-2">
-        <motion.li {...fadeUp(0.05)} className="col-span-2 lg:col-span-1 lg:row-span-2">
-          <RoomCard room={living} large />
-        </motion.li>
-        {rest.map((room, i) => (
-          <motion.li key={room.key} {...fadeUp(0.1 + i * 0.06)}>
+      {/* Mobiel: één veegbare rij. Vanaf lg: alle vijf ruimtes naast elkaar, zodat de sectie compact blijft. */}
+      <ul
+        ref={track}
+        onScroll={onScroll}
+        aria-label="Ruimtes in het appartement, horizontaal scrollbaar"
+        tabIndex={0}
+        className="relative -mx-[1.875rem] mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto px-[1.875rem] pb-1 [scrollbar-width:none] focus-visible:outline-offset-[-4px] md:-mx-12 md:mt-12 md:px-12 xl:mt-14 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+      >
+        {ROOMS.map((room, i) => (
+          <motion.li
+            key={room.key}
+            {...fadeUp(0.05 + i * 0.05)}
+            aria-current={i === active ? "true" : undefined}
+            className="w-[80%] shrink-0 snap-start scroll-ml-[1.875rem] sm:w-[45%] md:scroll-ml-12 lg:w-auto"
+          >
             <RoomCard room={room} />
           </motion.li>
         ))}
       </ul>
 
-      <motion.dl
-        {...fadeUp(0.1)}
-        className="mt-3 grid grid-cols-2 gap-y-6 rounded-[20px] border border-forest-950/8 bg-[var(--panel)] px-6 py-6 text-forest-950 sm:grid-cols-3 md:mt-4 md:px-9 md:py-7 lg:grid-cols-5"
-      >
-        {HOUSE_FACTS.map((f) => (
-          <div key={f.label} className="flex flex-col-reverse gap-1 lg:border-l lg:border-forest-950/8 lg:pl-8 lg:first:border-l-0 lg:first:pl-0">
-            <dt className="text-[0.8125rem] text-forest-950/60">{f.label}</dt>
-            <dd className="font-display text-[clamp(1.75rem,2.6vw,2.25rem)] leading-none font-light tracking-[-0.03em] tabular-nums">{f.value}</dd>
-          </div>
-        ))}
-      </motion.dl>
+      <div className="mt-6 flex items-center justify-center gap-4 lg:hidden">
+        <NavButton label="Vorige ruimte" disabled={active === 0} onClick={() => goTo(active - 1)}>
+          <ArrowLeft size={18} aria-hidden />
+        </NavButton>
+        <div className="flex gap-1.5">
+          {ROOMS.map((room, i) => (
+            <button
+              key={room.key}
+              type="button"
+              aria-label={`Ga naar ${room.title.toLowerCase()}`}
+              aria-current={i === active ? "true" : undefined}
+              onClick={() => goTo(i)}
+              className="group grid h-11 cursor-pointer place-items-center"
+            >
+              <span
+                className={`block h-0.5 rounded-full transition-[width,background-color] duration-500 ease-(--ease-out-soft) ${
+                  i === active ? "w-8 bg-forest-950" : "w-4 bg-forest-950/20 group-hover:bg-forest-950/40"
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+        <NavButton label="Volgende ruimte" disabled={active === ROOMS.length - 1} onClick={() => goTo(active + 1)}>
+          <ArrowRight size={18} aria-hidden />
+        </NavButton>
+      </div>
     </section>
   );
 }
 
-function RoomCard({ room, large = false }: { room: Room; large?: boolean }) {
+function RoomCard({ room }: { room: Room }) {
   return (
-    <figure
-      className={`relative isolate flex h-full flex-col justify-end overflow-hidden rounded-[20px] bg-forest-900 text-bone ${
-        large ? "min-h-[420px] p-6 md:min-h-[560px] md:p-8" : "min-h-[210px] p-4 sm:min-h-[260px] sm:p-5 md:min-h-[272px] md:p-6"
-      }`}
-    >
-      <img src={room.image} alt={room.alt} loading="lazy" decoding="async" className="absolute inset-0 -z-10 size-full object-cover" />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(12_20_15/0)_45%,rgb(12_20_15/0.75)_100%)]" />
-      <figcaption>
-        <span className={`block font-display font-medium tracking-[-0.03em] ${large ? "text-xl md:text-2xl" : "text-base leading-tight sm:text-lg"}`}>{room.title}</span>
-        {/* Smalle kaarten op mobiel: alleen de naam, de foto vertelt de rest */}
-        <span className={`mt-1 max-w-[38ch] leading-[1.55] text-bone/80 ${large ? "block text-sm" : "hidden text-[0.8125rem] sm:block"}`}>{room.text}</span>
+    <figure>
+      <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-forest-900">
+        <img src={room.image} alt={room.alt} loading="lazy" decoding="async" className="size-full object-cover" />
+      </div>
+      <figcaption className="mt-3 text-forest-950">
+        <span className="block font-display text-base leading-tight lg:text-lg">{room.title}</span>
+        <span className="mt-1 block text-[0.8125rem] leading-[1.55] text-forest-950/60">{room.text}</span>
       </figcaption>
     </figure>
+  );
+}
+
+function NavButton({ label, disabled, onClick, children }: { label: string; disabled: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-forest-950 text-bone transition-[transform,opacity,background-color] duration-200 hover:bg-forest-900 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 disabled:active:scale-100"
+    >
+      {children}
+    </button>
   );
 }

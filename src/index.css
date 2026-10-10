@@ -109,25 +109,36 @@ body {
 /* Sectie-afstand: .hl-sy = boven en onder, .hl-sb = alleen onder.
    Regel: twee lichte secties na elkaar delen één afstand, dus de tweede krijgt .hl-sb (anders dubbel wit). */
 :root {
-  --hl-section-y: 4rem;
+  --hl-section-y: 5rem;
 }
 @media (min-width: 768px) {
   :root {
-    --hl-section-y: 5.5rem;
+    --hl-section-y: 7rem;
+  }
+}
+/* Brede schermen: meer lucht tussen secties, anders lopen ze in elkaar over */
+@media (min-width: 1280px) {
+  :root {
+    --hl-section-y: 9rem;
   }
 }
 :root[data-spacing="compact"] {
   --hl-section-y: 3rem;
 }
 :root[data-spacing="ruim"] {
-  --hl-section-y: 5rem;
+  --hl-section-y: 6rem;
 }
 @media (min-width: 768px) {
   :root[data-spacing="compact"] {
     --hl-section-y: 4rem;
   }
   :root[data-spacing="ruim"] {
-    --hl-section-y: 7.5rem;
+    --hl-section-y: 9rem;
+  }
+}
+@media (min-width: 1280px) {
+  :root[data-spacing="ruim"] {
+    --hl-section-y: 11rem;
   }
 }
 .hl-sy {
