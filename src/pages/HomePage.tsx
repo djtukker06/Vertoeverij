@@ -10,14 +10,11 @@ export function HomePage() {
   return (
     <>
       <Hero />
-      {/* .after-hero: schuift over de gepinde hero. Eén laag met achtergrond voor alle secties, zodat de hero nergens doorschijnt. */}
-      <div className="after-hero relative z-10 bg-[var(--surface)]">
-        <HouseSection />
-        <Amenities />
-        <NearbySection />
-        <OwnersSection />
-        <Reviews />
-      </div>
+      <HouseSection />
+      <Amenities />
+      <NearbySection />
+      <OwnersSection />
+      <Reviews />
     </>
   );
 }

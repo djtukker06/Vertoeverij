@@ -86,24 +86,6 @@ body {
 }
 
 
-/* Scroll-stage hero: kaart pint, opent naar fullscreen, volgende sectie schuift eroverheen.
-   Zelfde query als PIN_QUERY in Hero.tsx. */
-@media (min-width: 768px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
-  .hero-track {
-    height: 200dvh; /* 100dvh pin + 100dvh waarin de volgende sectie eroverheen schuift */
-  }
-  .hero-pin {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    overflow: hidden;
-  }
-  .after-hero {
-    margin-top: -100dvh;
-    border-radius: 28px 28px 0 0;
-  }
-}
-
 /* Bezette nachten in de beschikbaarheidskalender: arcering leest als "dicht", ook zonder kleur */
 .booked-hatch {
   background-image: repeating-linear-gradient(
