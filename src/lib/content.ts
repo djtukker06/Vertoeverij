@@ -8,7 +8,7 @@ const DEFAULT_TEXTS = {
   heroCta: "Boek je verblijf",
   bookingTitle: "Even heerlijk vertoeven?",
   bookingIntro: "Kies je data, vul je gezelschap in en geef aan of je de privé wellness erbij wilt. De prijs zie je direct.",
-  bookingHouse: "Appartement met privé wellness",
+  bookingHouse: "Vakantiehuis met privé wellness",
   bookingPaymentNote: "Je betaalt pas als we je aanvraag hebben bevestigd.",
   bookingSubmit: "Boeking aanvragen",
   bookingThanks: "We bekijken je aanvraag en nemen zo snel mogelijk contact met je op.",

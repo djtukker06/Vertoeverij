@@ -12,7 +12,7 @@ const HouseRulesPage = lazy(() => import("./pages/HouseRulesPage").then((m) => (
 const PAGES: Record<string, { title: string; description: string; render: () => React.ReactNode }> = {
   [ROUTES.home]: {
     title: `${BRAND_NAME} | Bed & Wellness in Kloosterhaar`,
-    description: "Comfortabel appartement in het buitengebied van Kloosterhaar, met vrij uitzicht over de weilanden en een privé wellness.",
+    description: "Comfortabel vakantiehuis in het buitengebied van Kloosterhaar, met vrij uitzicht over de weilanden en een privé wellness.",
     render: () => <HomePage />,
   },
   [ROUTES.houseRules]: {

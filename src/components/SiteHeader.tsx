@@ -21,8 +21,8 @@ export function SiteHeader() {
   return (
     <div className="flex items-center justify-between gap-6">
       <Logo />
-      <div className="flex items-center gap-3 md:gap-8">
-        <nav aria-label="Hoofdmenu" className="hidden md:block">
+      <div className="flex items-center gap-3 lg:gap-8">
+        <nav aria-label="Hoofdmenu" className="hidden lg:block">
           <ul className="flex items-center gap-7">
             {NAV.map((item) => {
               const current = item.href === path;
@@ -44,7 +44,7 @@ export function SiteHeader() {
         </nav>
         <Link
           href={ROUTES.availability}
-          className="hidden h-10 items-center rounded-full bg-bone px-5 text-sm font-medium text-forest-950 transition-[transform,background-color] duration-200 hover:bg-white active:scale-[0.97] sm:inline-flex"
+          className="hidden h-10 items-center rounded-full bg-bone px-5 text-sm font-medium whitespace-nowrap text-forest-950 transition-[transform,background-color] duration-200 hover:bg-white active:scale-[0.97] sm:inline-flex"
         >
           Boek je verblijf
         </Link>
@@ -85,7 +85,7 @@ function MobileMenu() {
   }, [open]);
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         ref={toggle}
         type="button"

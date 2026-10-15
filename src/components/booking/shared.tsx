@@ -5,7 +5,7 @@ import type { Icon } from "@phosphor-icons/react";
 const ease = [0.16, 1, 0.3, 1] as const;
 
 export const triggerClass =
-  "flex h-12 w-full cursor-pointer items-center justify-between gap-2 rounded-xl bg-forest-950/[0.06] px-4 text-left text-sm text-forest-950 transition-colors duration-200 hover:bg-forest-950/10 aria-expanded:bg-forest-950/10";
+  "flex h-12 w-full cursor-pointer items-center justify-between gap-1.5 rounded-xl bg-forest-950/[0.06] px-3 text-left text-sm whitespace-nowrap sm:gap-2 sm:px-4 text-forest-950 transition-colors duration-200 hover:bg-forest-950/10 aria-expanded:bg-forest-950/10";
 
 // Sluit bij klik of focus buiten het veld (Tab weg, ander veld aanklikken).
 export function useDismiss(ref: RefObject<HTMLElement | null>, open: boolean, onClose: () => void) {

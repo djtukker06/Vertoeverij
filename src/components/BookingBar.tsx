@@ -42,7 +42,7 @@ export function BookingBar() {
       noValidate
       className="rounded-[20px] bg-bone p-4 text-forest-950 shadow-[0_30px_80px_rgb(8_14_10/0.35)] md:p-5 [&_:focus-visible]:outline-forest-700"
     >
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-[1fr_1fr_1fr_1fr_auto] md:items-end md:gap-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:items-end md:gap-4 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]">
         <DatePicker
           label="Aankomst"
           icon={CalendarBlank}
@@ -95,7 +95,7 @@ export function BookingBar() {
         />
         <button
           type="submit"
-          className="col-span-2 inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-forest-950 px-7 text-sm font-medium whitespace-nowrap text-bone transition-[transform,background-color] duration-200 ease-(--ease-out-soft) hover:bg-forest-900 active:scale-[0.97] md:col-span-1"
+          className="col-span-2 inline-flex h-12 md:col-span-4 lg:col-span-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-forest-950 px-7 text-sm font-medium whitespace-nowrap text-bone transition-[transform,background-color] duration-200 ease-(--ease-out-soft) hover:bg-forest-900 active:scale-[0.97]"
         >
           {TEXT.heroCta}
         </button>

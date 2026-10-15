@@ -3,7 +3,7 @@ import { SiteHeader } from "./SiteHeader";
 import { HeroBackground } from "./HeroBackground";
 import { BookingBar } from "./BookingBar";
 
-// Uit de aangeleverde teksten: appartement voor vier, twee slaapkamers met eigen badkamer, privé wellness.
+// Uit de aangeleverde teksten: huis voor vier, twee slaapkamers met eigen badkamer, privé wellness.
 const FACTS = [
   { value: "4", label: "personen" },
   { value: "2", label: "slaapkamers" },
@@ -63,7 +63,7 @@ export function Hero() {
               variants={rise}
               className="mt-6 max-w-[44ch] text-sm leading-[1.65] text-bone/80"
             >
-              In het buitengebied van Kloosterhaar, met vrij uitzicht over de weilanden. Een comfortabel appartement
+              In het buitengebied van Kloosterhaar, met vrij uitzicht over de weilanden. Een comfortabel huis
               met een privé wellness die je eenvoudig bij je verblijf boekt.
             </motion.p>
           </div>

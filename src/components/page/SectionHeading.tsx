@@ -52,7 +52,7 @@ export function SectionHeading({ id, eyebrow, title, text, align = "left", water
         {watermark && (
           <p
             aria-hidden
-            className={`pointer-events-none absolute -top-12 left-1/2 -z-10 -translate-x-1/2 font-display text-[clamp(6rem,19vw,17rem)] leading-[0.8] font-semibold tracking-[-0.05em] whitespace-nowrap select-none md:-top-14 ${
+            className={`pointer-events-none absolute -top-12 left-1/2 -z-10 -translate-x-1/2 font-display text-[18vw] leading-[0.8] font-semibold md:text-[clamp(6rem,19vw,17rem)] tracking-[-0.05em] whitespace-nowrap select-none md:-top-14 ${
               dark ? "text-bone/[0.045]" : "text-forest-950/[0.04]"
             }`}
           >

@@ -59,7 +59,8 @@ export function WellnessCarousel({ slides, className = "" }: { slides: Slide[]; 
       })}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(12_20_15/0)_55%,rgb(12_20_15/0.65)_100%)]" />
 
-      <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 text-bone md:p-6">
+      {/* Mobiel: teller linksboven, knoppen rechtsonder (anders vallen ze buiten de foto). Vanaf sm samen onderin. */}
+      <figcaption className="absolute inset-0 flex flex-col items-start justify-between gap-3 p-4 text-bone sm:inset-x-0 sm:top-auto sm:flex-row sm:items-end sm:p-5 md:p-6">
         {/* Teller in dezelfde stijl als bij de voorzieningen (01/04 + titel) */}
         <span aria-live={running ? "off" : "polite"} className="glass flex items-center gap-3 rounded-full py-2 pr-4 pl-2 text-[0.8125rem]">
           <span className="rounded-full bg-bone px-2.5 py-0.5 font-medium text-forest-950 tabular-nums">
@@ -67,7 +68,7 @@ export function WellnessCarousel({ slides, className = "" }: { slides: Slide[]; 
           </span>
           <span className="font-medium">{slides[index].caption}</span>
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 self-end sm:self-auto">
           <CarouselButton label="Vorige foto" onClick={() => go(index - 1)}>
             <ArrowLeft size={16} aria-hidden />
           </CarouselButton>

@@ -173,7 +173,7 @@ export function BookingSection() {
                     value={adults}
                     min={1}
                     max={MAX_GUESTS - children}
-                    maxReason={`Het appartement is geschikt voor maximaal ${MAX_GUESTS} personen`}
+                    maxReason={`Het huis is geschikt voor maximaal ${MAX_GUESTS} personen`}
                     onChange={setAdults}
                   />
                   <Stepper
@@ -182,7 +182,7 @@ export function BookingSection() {
                     value={children}
                     min={0}
                     max={MAX_GUESTS - adults}
-                    maxReason={`Het appartement is geschikt voor maximaal ${MAX_GUESTS} personen`}
+                    maxReason={`Het huis is geschikt voor maximaal ${MAX_GUESTS} personen`}
                     onChange={setChildren}
                   />
                   <Stepper

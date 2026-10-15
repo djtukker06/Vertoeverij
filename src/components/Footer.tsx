@@ -47,7 +47,7 @@ export function Footer() {
                     <Link
                       href={link.href}
                       {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                      className="inline-flex items-center gap-1 py-0.5 text-sm break-all text-forest-950/60 transition-colors duration-200 hover:text-forest-950"
+                      className="inline-flex items-center gap-1 py-0.5 text-sm [overflow-wrap:anywhere] text-forest-950/60 transition-colors duration-200 hover:text-forest-950"
                     >
                       {link.label}
                       {link.external && (
@@ -119,7 +119,7 @@ function ContactBlock() {
               <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full bg-bone/10 transition-colors group-hover:bg-bone/20">
                 <r.icon size={15} />
               </span>
-              <span className="break-all">
+              <span className="[overflow-wrap:anywhere]">
                 <span className="sr-only">{r.label}: </span>
                 {r.value}
               </span>

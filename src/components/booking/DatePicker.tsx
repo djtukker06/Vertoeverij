@@ -93,7 +93,7 @@ export function DatePicker({ label, icon, value, onChange, min, rangeStart, isUn
         onClick={() => onOpenChange(!open)}
         className={triggerClass}
       >
-        <span className={value ? "" : "text-forest-950/60"}>{value ? shortFmt.format(value) : "Kies datum"}</span>
+        <span className={`min-w-0 truncate ${value ? "" : "text-forest-950/60"}`}>{value ? shortFmt.format(value) : "Kies datum"}</span>
         <CaretDown size={14} aria-hidden className={`shrink-0 opacity-60 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 

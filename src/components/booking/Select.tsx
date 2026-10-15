@@ -77,7 +77,7 @@ export function Select<T extends string>({ label, icon, options, value, onChange
         }}
         className={triggerClass}
       >
-        <span id={`${id}-value`}>{current?.label}</span>
+        <span id={`${id}-value`} className="min-w-0 truncate">{current?.label}</span>
         <CaretDown size={14} aria-hidden className={`shrink-0 opacity-60 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 

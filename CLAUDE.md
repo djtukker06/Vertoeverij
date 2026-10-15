@@ -1,6 +1,6 @@
 # Vertoeverij De Zandloper
 
-Bed & Wellness in Kloosterhaar (Overijssel): appartement voor vier personen plus een privé wellness (sauna, jacuzzi, Turks stoombad), samen of los te boeken. Doelgroep: rustige stellen en oudere koppels. Uitstraling: rustig, luxe, hotelchique, warm. Tone of voice: netjes maar nuchter, niet mooier maken dan het is.
+Bed & Wellness in Kloosterhaar (Overijssel): vrijstaand huis voor vier personen (geen appartement: altijd "huis" in de teksten) plus een privé wellness (sauna, jacuzzi, Turks stoombad), samen of los te boeken. Doelgroep: rustige stellen en oudere koppels. Uitstraling: rustig, luxe, hotelchique, warm. Tone of voice: netjes maar nuchter, niet mooier maken dan het is.
 
 **Dit project is een kopie van de Heidelust-site (`../Vakantiehuis`) met alleen de huisstijl, inhoud en foto's vervangen. Het ontwerp (opbouw, componenten, animaties, afstanden) blijft exact gelijk; wijzig het niet.**
 
