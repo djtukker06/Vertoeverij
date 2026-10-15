@@ -1,16 +1,28 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type AnchorHTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { scrollToId, smoothScrollTo } from "./scroll";
 
+// Onepager: alle onderdelen staan op de homepage; de "routes" zijn ankers. Alleen huisregels is een eigen pagina.
 export const ROUTES = {
   home: "/",
-  accommodation: "/accommodatie",
-  wellness: "/wellness",
-  surroundings: "/omgeving",
-  availability: "/boeken",
-  prices: "/prijzen",
-  contact: "/contact",
+  accommodation: "/#het-huis",
+  wellness: "/#wellness",
+  surroundings: "/#omgeving",
+  availability: "/#boeken",
+  reviews: "/#reviews",
+  contact: "/#contact",
   houseRules: "/huisregels",
 } as const;
+
+/** Oude adressen (losse pagina's) sturen door naar hun sectie op de homepage. */
+export const LEGACY_PATHS: Record<string, string> = {
+  "/accommodatie": ROUTES.accommodation,
+  "/wellness": ROUTES.wellness,
+  "/omgeving": ROUTES.surroundings,
+  "/boeken": ROUTES.availability,
+  "/beschikbaarheid": ROUTES.availability,
+  "/prijzen": ROUTES.availability,
+  "/contact": ROUTES.contact,
+};
 
 type RouterValue = { path: string; navigate: (href: string) => void };
 const RouterContext = createContext<RouterValue | null>(null);

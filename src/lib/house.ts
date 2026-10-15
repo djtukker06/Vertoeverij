@@ -50,8 +50,9 @@ export const ROOMS: Room[] = [
     key: "badkamer",
     title: "Badkamers",
     text: "Twee badkamers met inloopdouche, wastafel en toilet.",
-    image: a("badkamer"),
-    alt: "Badkamer met inloopdouche en toilet",
+    // Breedste badkamerfoto: inloopdouche, wastafelmeubel en toilet in één beeld
+    image: a("badkamer-2"),
+    alt: "Badkamer met inloopdouche, wastafelmeubel en toilet",
   },
 ];
 
@@ -62,8 +63,8 @@ export const AMENITIES: AmenityGroup[] = [
   {
     title: "Wonen en koken",
     items: ["Ruime woonkamer met televisie", "Volledig uitgeruste keuken", "Gratis wifi", "Rookvrij"],
-    image: a("woonkamer-keuken"),
-    alt: "Woonkamer met bank en fauteuils, met links de keuken",
+    image: a("woonkamer-3"),
+    alt: "Lichte woonkamer met bank, fauteuils, salontafel en een eiken buffetkast",
   },
   {
     title: "Slapen",
@@ -90,12 +91,24 @@ export const WELLNESS = {
   title: "Even helemaal ontspannen",
   image: asset("/foto/wellness/samen.webp"),
   alt: "Twee gasten in badjas in de sauna",
+  // Carrousel in de wellness-sectie. TODO: klantdata, stockfoto's vervangen door foto's van de echte wellness.
+  images: [
+    { src: asset("/foto/wellness/samen.webp"), alt: "Twee gasten in badjas in de sauna", caption: "Samen in de sauna" },
+    { src: asset("/foto/wellness/jacuzzi.webp"), alt: "Jacuzzi met warm licht", caption: "Jacuzzi" },
+    { src: asset("/foto/wellness/sauna-glas.webp"), alt: "Stoomruimte achter een glazen deur", caption: "Turks stoombad" },
+    { src: asset("/foto/wellness/sauna-warm.webp"), alt: "Sauna met houten banken en een emmer bij de saunakachel", caption: "Sauna" },
+    { src: asset("/foto/wellness/regendouche.webp"), alt: "Regendouche naast de sauna", caption: "Regendouche", position: "50% 0%" },
+  ],
+  // Uit de aangeleverde teksten (Teksten.pdf, Wellness De Zandloper)
   story: [
     "Bij De Zandloper kun je gebruikmaken van een privé wellness. De wellness is volledig voor jullie alleen en is onbemand.",
-    "Je hoeft dus met niemand rekening te houden. Je hebt alle privacy en maakt er rustig je eigen moment van. Bij je verblijf, of los te boeken.",
+    "Je hoeft dus met niemand rekening te houden. Je hebt alle privacy en maakt er rustig je eigen moment van.",
+    "De wellness is een fijne aanvulling op je verblijf, maar is ook los te boeken. Even ontspannen na een wandeling of fietstocht, of omdat je zin hebt in wat rust.",
+    "Geen drukte, geen andere gasten. Een moment voor jezelf.",
   ],
   facts: [
-    { value: "Sauna", label: "en Turks stoombad" },
-    { value: "Jacuzzi", label: "voor jullie alleen" },
+    { value: "Sauna", label: "om op te warmen" },
+    { value: "Turks stoombad", label: "vochtige warmte" },
+    { value: "Jacuzzi", label: "bruisend water" },
   ],
 };

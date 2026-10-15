@@ -13,8 +13,8 @@ const FACT_ICONS: Record<string, Icon> = {
   wellness: Drop,
 };
 
-// Eerste sectie na de hero: kop links, intro rechts, kerncijfers op één regel eronder,
-// daaronder alle ruimtes in één rij kleine foto's met het onderschrift onder de foto.
+// Eerste sectie na de hero: gecentreerde kop met een vaag woord erachter (zelfde als Reviews), kerncijfers op
+// één regel eronder, daaronder de ruimtes: vanaf lg drie naast elkaar en de andere twee breder eronder.
 // Onder lg is die rij een carrousel (veegbaar, met pijlen en streepjes zoals bij Reviews).
 export function HouseSection() {
   const reduce = useReducedMotion();
@@ -55,18 +55,27 @@ export function HouseSection() {
         };
 
   return (
-    <section id="het-huis" aria-labelledby="het-huis-titel" className="px-[1.875rem] hl-sy md:px-12">
-      <motion.div {...fadeUp()} className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end lg:gap-x-12 lg:gap-y-8">
+    <section id="het-huis" aria-labelledby="het-huis-titel" className="relative isolate overflow-hidden px-[1.875rem] hl-sy md:px-12">
+      {/* Statisch woord achter de titel, zelfde opbouw als bij Reviews. Geen scroll-animatie. */}
+      <p
+        aria-hidden
+        className="pointer-events-none absolute top-8 left-1/2 -z-10 -translate-x-1/2 font-display text-[clamp(6rem,19vw,17rem)] leading-[0.8] font-semibold tracking-[-0.05em] whitespace-nowrap text-forest-950/[0.04] select-none md:top-12"
+      >
+        Vertoeverij
+      </p>
+      <div className="hl-wrap">
+      <motion.div {...fadeUp()} className="mx-auto max-w-3xl text-center">
+        <p className="text-[0.8125rem] font-medium text-forest-700">Het appartement</p>
         <h2
           id="het-huis-titel"
-          className="font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.08] font-medium text-balance text-forest-950 lg:col-span-6"
+          className="mt-3 font-display text-[clamp(2.5rem,5vw,4.25rem)] leading-[1.04] font-medium tracking-[-0.035em] text-balance text-forest-950"
         >
           Comfortabel verblijven in het buitengebied
         </h2>
-        <p className="max-w-[46ch] text-sm leading-[1.65] text-forest-950/65 lg:col-span-5 lg:col-start-8">
+        <p className="mx-auto mt-4 max-w-[46ch] text-sm leading-[1.65] text-forest-950/65">
           Een ruim appartement voor maximaal vier personen, met twee slaapkamers die elk een eigen badkamer hebben.
         </p>
-        <dl className="grid grid-cols-2 gap-x-5 gap-y-2.5 border-t border-forest-950/10 pt-5 text-[0.8125rem] text-forest-950 sm:flex sm:flex-wrap md:gap-x-8 lg:col-span-12 lg:gap-x-10">
+        <dl className="mt-8 grid grid-cols-2 gap-x-5 gap-y-2.5 border-t border-forest-950/10 pt-5 text-left text-[0.8125rem] text-forest-950 sm:flex sm:flex-wrap sm:justify-center md:gap-x-8">
           {HOUSE_FACTS.map((f) => {
             const FactIcon = FACT_ICONS[f.label];
             return (
@@ -82,22 +91,22 @@ export function HouseSection() {
         </dl>
       </motion.div>
 
-      {/* Mobiel: één veegbare rij. Vanaf lg: alle vijf ruimtes naast elkaar, zodat de sectie compact blijft. */}
+      {/* Mobiel: één veegbare rij. Vanaf lg: drie ruimtes naast elkaar, de andere twee eronder (6-koloms grid). */}
       <ul
         ref={track}
         onScroll={onScroll}
         aria-label="Ruimtes in het appartement, horizontaal scrollbaar"
         tabIndex={0}
-        className="relative -mx-[1.875rem] mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto px-[1.875rem] pb-1 [scrollbar-width:none] focus-visible:outline-offset-[-4px] md:-mx-12 md:mt-12 md:px-12 xl:mt-14 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+        className="relative -mx-[1.875rem] mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto px-[1.875rem] pb-1 [scrollbar-width:none] focus-visible:outline-offset-[-4px] md:-mx-12 md:mt-12 md:px-12 xl:mt-14 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-x-4 lg:gap-y-10 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
       >
         {ROOMS.map((room, i) => (
           <motion.li
             key={room.key}
             {...fadeUp(0.05 + i * 0.05)}
             aria-current={i === active ? "true" : undefined}
-            className="w-[80%] shrink-0 snap-start scroll-ml-[1.875rem] sm:w-[45%] md:scroll-ml-12 lg:w-auto"
+            className={`w-[80%] shrink-0 snap-start scroll-ml-[1.875rem] sm:w-[45%] md:scroll-ml-12 lg:w-auto ${i < 3 ? "lg:col-span-2" : "lg:col-span-3"}`}
           >
-            <RoomCard room={room} />
+            <RoomCard room={room} wide={i >= 3} />
           </motion.li>
         ))}
       </ul>
@@ -128,14 +137,16 @@ export function HouseSection() {
           <ArrowRight size={18} aria-hidden />
         </NavButton>
       </div>
+      </div>
     </section>
   );
 }
 
-function RoomCard({ room }: { room: Room }) {
+// Onderste rij (wide) is breder: lagere verhouding zodat beide rijen even hoge foto's hebben.
+function RoomCard({ room, wide = false }: { room: Room; wide?: boolean }) {
   return (
     <figure>
-      <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-forest-900">
+      <div className={`aspect-[4/3] overflow-hidden rounded-2xl bg-forest-900 ${wide ? "lg:aspect-[2/1]" : ""}`}>
         <img src={room.image} alt={room.alt} loading="lazy" decoding="async" className="size-full object-cover" />
       </div>
       <figcaption className="mt-3 text-forest-950">

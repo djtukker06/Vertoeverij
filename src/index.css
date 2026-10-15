@@ -174,3 +174,25 @@ body {
 :root[data-heading-font="geist"] {
   --font-display: "Geist Variable", system-ui, sans-serif;
 }
+
+/* Reviews: doorlopende rij. Twee kopieën van de lijst; na 50% staat de tweede kopie precies waar de eerste begon. */
+@keyframes reviews-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.reviews-marquee {
+  animation: reviews-marquee var(--reviews-duration, 140s) linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reviews-marquee {
+    animation: none;
+  }
+}
+
+/* Inhoudsbreedte in verhouding: overal 85% van het scherm (op mobiel bepaalt de zijmarge van de sectie het al).
+   Alle secties, hero en footer gebruiken dit, zodat ze op één lijn starten. */
+.hl-wrap {
+  width: min(100%, 85vw);
+  margin-inline: auto;
+}

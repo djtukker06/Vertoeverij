@@ -31,11 +31,18 @@ export function Amenities() {
         };
 
   return (
-    <section aria-labelledby="voorzieningen-titel" className="px-[1.875rem] hl-sb md:px-12">
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-x-16">
+    <section id="voorzieningen" aria-labelledby="voorzieningen-titel" className="px-[1.875rem] hl-sy md:px-12">
+      <div className="hl-wrap">
+      <SectionHeading align="center"
+        id="voorzieningen-titel"
+        eyebrow="Voorzieningen"
+        title="Dit vind je bij De Zandloper"
+        text="Of je nu een paar dagen wilt wandelen en fietsen of even weg wilt uit de drukte: hier heb je de ruimte."
+      />
+      <div className="mt-10 grid grid-cols-1 gap-10 md:mt-12 lg:grid-cols-12 lg:items-start lg:gap-x-16">
         <motion.figure
           {...fadeUp(0.05)}
-          className="relative isolate hidden overflow-hidden rounded-[20px] bg-forest-900 lg:sticky lg:top-8 lg:col-span-6 lg:block lg:h-[min(82svh,46rem)]"
+          className="relative isolate hidden overflow-hidden rounded-[20px] bg-forest-900 lg:sticky lg:top-8 lg:col-span-6 lg:block lg:h-[min(70svh,36rem)]"
         >
           {AMENITIES.map((group, i) => (
             <img
@@ -59,14 +66,7 @@ export function Amenities() {
         </motion.figure>
 
         <div className="lg:col-span-6">
-          <SectionHeading
-            id="voorzieningen-titel"
-            title="Dit vind je bij De Zandloper"
-            text="Of je nu een paar dagen wilt wandelen en fietsen of even weg wilt uit de drukte: hier heb je de ruimte."
-            align="left"
-          />
-
-          <motion.ul {...fadeUp(0.1)} className="mt-10 border-t border-forest-950/10 md:mt-12">
+          <motion.ul {...fadeUp(0.1)} className="border-t border-forest-950/10">
             {AMENITIES.map((group, i) => {
               const isOpen = i === open;
               const buttonId = `${id}-knop-${i}`;
@@ -133,6 +133,7 @@ export function Amenities() {
             })}
           </motion.ul>
         </div>
+      </div>
       </div>
     </section>
   );

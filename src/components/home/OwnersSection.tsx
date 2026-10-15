@@ -1,13 +1,16 @@
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight } from "@phosphor-icons/react";
 import { WELLNESS } from "../../lib/house";
-import { Link, ROUTES } from "../../lib/router";
+import { WellnessCarousel } from "./WellnessCarousel";
+import { SectionHeading } from "../page/SectionHeading";
+import { useBooking } from "../../lib/booking";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-// Wellness De Zandloper: foto als fotokaart, tekst ernaast (zelfde opbouw als de kennismaking in het ontwerp).
+// Wellness De Zandloper: donkergroene kaart met de vaste sectiekop, daaronder een fotocarrousel en het verhaal.
 export function OwnersSection() {
   const reduce = useReducedMotion();
+  const { setWellness, goToBooking } = useBooking();
   const fadeUp = (delay = 0) =>
     reduce
       ? {}
@@ -19,43 +22,54 @@ export function OwnersSection() {
         };
 
   return (
-    <section id="wellness" aria-labelledby="wellness-titel" className="px-[1.875rem] hl-sy md:px-12">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-4">
-        <motion.figure {...fadeUp()} className="relative isolate min-h-[420px] overflow-hidden rounded-[20px] bg-forest-900 md:min-h-[560px]">
-          <img src={WELLNESS.image} alt={WELLNESS.alt} loading="lazy" decoding="async" className="absolute inset-0 -z-10 size-full object-cover object-[50%_30%]" />
-        </motion.figure>
+    <section id="wellness" aria-labelledby="wellness-titel" className="scroll-mt-0 p-2.5 md:p-2">
+      <div className="rounded-[28px] bg-forest-950 px-5 hl-sy text-bone md:px-10">
+        <div className="hl-wrap">
+          <SectionHeading align="center"
+            id="wellness-titel"
+            eyebrow="Wellness De Zandloper"
+            title={WELLNESS.title}
+            text="Sauna, jacuzzi en Turks stoombad, helemaal voor jullie alleen."
+            tone="dark"
+            action={
+              // Naar de boekingssectie met de privé wellness al aangevinkt
+              <button
+                type="button"
+                onClick={() => {
+                  setWellness(true);
+                  goToBooking(1);
+                }}
+                className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl bg-bone px-5 text-sm font-medium text-forest-950 transition-[transform,background-color] duration-200 hover:bg-white active:scale-[0.97]"
+              >
+                Boek met wellness
+                <ArrowRight size={16} aria-hidden />
+              </button>
+            }
+          />
 
-        <motion.div
-          {...fadeUp(0.1)}
-          className="flex flex-col rounded-[20px] border border-forest-950/8 bg-[var(--panel)] p-6 text-forest-950 md:p-10 lg:p-12"
-        >
-          <p className="text-[0.8125rem] font-medium text-forest-700">Wellness De Zandloper</p>
-          <h2 id="wellness-titel" className="mt-3 font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.08] font-medium tracking-[-0.035em] text-balance">
-            {WELLNESS.title}
-          </h2>
-          <div className="mt-6 flex max-w-[52ch] flex-col gap-4 text-sm leading-[1.65] text-forest-950/70">
-            {WELLNESS.story.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-          </div>
+          <div className="mt-10 grid grid-cols-1 gap-3 md:mt-12 md:gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <motion.div {...fadeUp(0.05)}>
+              <WellnessCarousel slides={WELLNESS.images} className="h-full min-h-[440px] md:min-h-[600px]" />
+            </motion.div>
 
-          <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-forest-950/8 pt-6 md:mt-auto md:pt-8">
-            {WELLNESS.facts.map((f) => (
-              <div key={f.label} className="flex flex-col-reverse gap-1">
-                <dt className="text-[0.8125rem] text-forest-950/60">{f.label}</dt>
-                <dd className="font-display text-[clamp(1.5rem,2.4vw,2rem)] leading-none font-light tracking-[-0.03em]">{f.value}</dd>
+            <motion.div {...fadeUp(0.12)} className="flex flex-col rounded-[20px] border border-bone/10 bg-forest-900 p-7 md:p-10 lg:p-12">
+              <div className="flex flex-col gap-5 text-[0.9375rem] leading-[1.7] text-bone/75">
+                {WELLNESS.story.map((p) => (
+                  <p key={p}>{p}</p>
+                ))}
               </div>
-            ))}
-          </dl>
-
-          <Link
-            href={ROUTES.wellness}
-            className="mt-8 inline-flex h-11 items-center gap-2 self-start rounded-xl bg-forest-950 px-5 text-sm font-medium text-bone transition-[transform,background-color] duration-200 hover:bg-forest-900 active:scale-[0.97]"
-          >
-            Alles over de wellness
-            <ArrowRight size={16} aria-hidden />
-          </Link>
-        </motion.div>
+              {/* Sauna, Turks stoombad en jacuzzi als drie losse regels */}
+              <dl className="mt-8 border-t border-bone/15 lg:mt-auto">
+                {WELLNESS.facts.map((f) => (
+                  <div key={f.value} className="flex items-baseline justify-between gap-6 border-b border-bone/10 py-4">
+                    <dt className="font-display text-[clamp(1.375rem,2vw,1.75rem)] leading-tight font-light tracking-[-0.03em]">{f.value}</dt>
+                    <dd className="text-right text-[0.8125rem] text-bone/60">{f.label}</dd>
+                  </div>
+                ))}
+              </dl>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

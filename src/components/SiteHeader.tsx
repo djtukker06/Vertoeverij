@@ -43,7 +43,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <Link
-          href={`${ROUTES.availability}#boeken`}
+          href={ROUTES.availability}
           className="hidden h-10 items-center rounded-full bg-bone px-5 text-sm font-medium text-forest-950 transition-[transform,background-color] duration-200 hover:bg-white active:scale-[0.97] sm:inline-flex"
         >
           Boek je verblijf
@@ -124,7 +124,7 @@ function MobileMenu() {
               </ul>
             </nav>
             <Link
-              href={`${ROUTES.availability}#boeken`}
+              href={ROUTES.availability}
               onClick={() => setOpen(false)}
               className="mt-2 flex h-12 items-center justify-center rounded-xl bg-forest-950 text-sm font-medium text-bone"
             >

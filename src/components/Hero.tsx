@@ -37,10 +37,14 @@ export function Hero() {
         variants={rise}
         className="relative z-20 px-[1.875rem] pt-[1.875rem] md:px-12 md:pt-9"
       >
-        <SiteHeader />
+        <div className="hl-wrap">
+          <SiteHeader />
+        </div>
       </motion.header>
 
+      {/* Zelfde breedte als de secties eronder (hl-wrap), zodat de hero-inhoud op dezelfde lijn start */}
       <div className="relative z-10 flex flex-1 flex-col px-[1.875rem] pb-[1.875rem] md:px-12 md:pb-12">
+        <div className="hl-wrap flex flex-1 flex-col">
         <div className="grid flex-1 items-center gap-10 pt-12 pb-10 md:grid-cols-[1fr_auto] md:gap-16 md:pt-8">
           <div>
             <h1 className="font-display text-[clamp(2.5rem,5.4vw,4.75rem)] leading-[1] font-medium tracking-[-0.035em]">
@@ -85,6 +89,7 @@ export function Hero() {
         <motion.div initial="hidden" animate="show" custom={1.4} variants={rise}>
           <BookingBar />
         </motion.div>
+        </div>
       </div>
     </section>
   );

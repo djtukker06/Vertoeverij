@@ -11,6 +11,7 @@ import { RATES, formatEuro, lowestRate, quote, type Quote } from "../lib/pricing
 import { BRAND_NAME } from "./Logo";
 import { scrollToElement, scrollToId } from "../lib/scroll";
 import { TEXT } from "../lib/content";
+import { SectionHeading } from "./page/SectionHeading";
 import { ROUTES } from "../lib/router";
 import { submitBookingRequest } from "../lib/bookingApi";
 
@@ -123,16 +124,10 @@ export function BookingSection() {
     <section
       id={BOOKING_SECTION_ID}
       aria-labelledby="boeken-titel"
-      className="scroll-mt-[var(--hl-section-y)] px-[1.875rem] hl-sb text-forest-950 md:px-12"
+      className="scroll-mt-[var(--hl-section-y)] px-[1.875rem] hl-sy text-forest-950 md:px-12"
     >
-      <div className="max-w-xl">
-        <h2 id="boeken-titel" className="font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.08] font-medium tracking-[-0.035em]">
-          {TEXT.bookingTitle}
-        </h2>
-        <p className="mt-4 max-w-[46ch] text-sm leading-[1.65] text-forest-950/65">
-          {TEXT.bookingIntro}
-        </p>
-      </div>
+      <div className="hl-wrap">
+      <SectionHeading align="center" id="boeken-titel" eyebrow="Reserveren" title={TEXT.bookingTitle} text={TEXT.bookingIntro} />
 
       <div className="mt-10 grid grid-cols-1 gap-4 md:mt-12 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start lg:gap-6">
         <div className="flex flex-col gap-3">
@@ -251,6 +246,7 @@ export function BookingSection() {
         </div>
 
         <Summary arrive={arrive} leave={leave} adults={adults} children={children} pets={pets} wellness={wellness} q={q} />
+      </div>
       </div>
     </section>
   );

@@ -53,10 +53,10 @@ export function BookingProvider({ children: content }: { children: ReactNode }) 
     (next: BookingStep) => {
       setOpen(null);
       setStep(next);
-      // Staat de boekingssectie op deze pagina: na de render scrollen, zodat de juiste stap al open staat.
-      // Anders (homepage) naar Beschikbaarheid; de gekozen data blijven bewaard.
+      // Boekingssectie staat op de homepage: na de render scrollen, zodat de juiste stap al open staat.
+      // Vanaf een andere pagina (huisregels) eerst naar home; de gekozen data blijven bewaard.
       if (document.getElementById(BOOKING_SECTION_ID)) window.setTimeout(() => scrollToId(BOOKING_SECTION_ID), 30);
-      else navigate(`${ROUTES.availability}#${BOOKING_SECTION_ID}`);
+      else navigate(ROUTES.availability);
     },
     [navigate],
   );

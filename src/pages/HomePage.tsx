@@ -2,18 +2,22 @@ import { Hero } from "../components/Hero";
 import { HouseSection } from "../components/home/HouseSection";
 import { Amenities } from "../components/home/Amenities";
 import { NearbySection } from "../components/home/NearbySection";
-import { OwnersSection } from "../components/home/OwnersSection";
+import { OwnersSection as WellnessSection } from "../components/home/OwnersSection";
+import { BookingSection } from "../components/BookingSection";
 import { Reviews } from "../components/Reviews";
 
-// Home gaat over het huis. Boeken loopt via de balk in de hero naar /beschikbaarheid (daar staan agenda en boekingssectie).
+// Onepager. Vast ritme: lichte en donkergroene secties wisselen elkaar af, elke sectie begint met dezelfde
+// kop (label, titel, intro). Alleen de eerste sectie is gecentreerd met een vaag woord erachter.
+// Contact staat in de footer (id="contact").
 export function HomePage() {
   return (
     <>
       <Hero />
       <HouseSection />
+      <WellnessSection />
       <Amenities />
       <NearbySection />
-      <OwnersSection />
+      <BookingSection />
       <Reviews />
     </>
   );
