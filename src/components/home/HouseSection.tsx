@@ -16,7 +16,8 @@ const FACT_ICONS: Record<string, Icon> = {
 // Eerste sectie na de hero: gecentreerde kop met een vaag woord erachter (zelfde als Reviews), kerncijfers op
 // één regel eronder, daaronder de ruimtes: vanaf lg drie naast elkaar en de andere twee breder eronder.
 // Onder lg is die rij een carrousel die je alleen met de pijlen en streepjes bedient (niet met je vinger te
-// verslepen: overflow hidden + touch-pan-y, zodat verticaal scrollen van de pagina gewoon werkt).
+// verslepen: overflow-hidden op BEIDE assen (alleen overflow-x-hidden maakt de y-as scrollbaar: dan schuift de rij
+// verticaal en tekent iOS witte vervagingen) + touch-pan-y, zodat de pagina zelf gewoon verticaal scrollt).
 export function HouseSection() {
   const reduce = useReducedMotion();
   const track = useRef<HTMLUListElement>(null);
@@ -97,7 +98,7 @@ export function HouseSection() {
         ref={track}
         onScroll={onScroll}
         aria-label="Ruimtes in het huis"
-        className="relative -mx-[1.875rem] mt-8 flex snap-x snap-mandatory gap-3 overflow-x-hidden touch-pan-y overscroll-x-none px-[1.875rem] pb-1 [scrollbar-width:none] md:-mx-12 md:mt-12 md:px-12 xl:mt-14 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-x-4 lg:gap-y-10 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+        className="relative -mx-[1.875rem] mt-8 flex snap-x snap-mandatory gap-3 overflow-hidden touch-pan-y px-[1.875rem] pb-1 [scrollbar-width:none] md:-mx-12 md:mt-12 md:px-12 xl:mt-14 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-x-4 lg:gap-y-10 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
       >
         {ROOMS.map((room, i) => (
           <motion.li

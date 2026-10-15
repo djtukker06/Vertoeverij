@@ -66,8 +66,8 @@ export function Footer() {
           <ContactBlock />
         </div>
 
-        {/* Onderregel: logo links, copyright in het midden, maker rechts (mobiel onder elkaar) */}
-        <div className="mt-10 grid grid-cols-1 items-center gap-4 border-t border-forest-950/8 pt-5 md:grid-cols-[1fr_auto_1fr]">
+        {/* Onderregel: logo links, copyright in het midden, maker rechts. Mobiel: alle drie onder elkaar en gecentreerd. */}
+        <div className="mt-10 grid grid-cols-1 items-center justify-items-center gap-4 border-t border-forest-950/8 pt-5 text-center md:grid-cols-[1fr_auto_1fr] md:justify-items-stretch md:text-left">
           <Logo />
           <p className="text-[0.8125rem] text-forest-950/55 md:text-center">
             &copy; {new Date().getFullYear()} {BRAND_NAME}
