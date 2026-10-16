@@ -15,8 +15,8 @@ const FACT_ICONS: Record<string, Icon> = {
 
 // Eerste sectie na de hero: gecentreerde kop met een vaag woord erachter (zelfde als Reviews), kerncijfers op
 // één regel eronder, daaronder de ruimtes: vanaf lg drie naast elkaar en de andere twee breder eronder.
-// Onder lg is die rij een carrousel die je alleen met de pijlen en streepjes bedient (niet met je vinger te
-// verslepen: overflow-hidden op BEIDE assen (alleen overflow-x-hidden maakt de y-as scrollbaar: dan schuift de rij
+// Onder lg is die rij een carrousel: pijlen, streepjes en een horizontale veeg (eigen touch-afhandeling, niet de
+// native scroll: overflow-hidden op BEIDE assen (alleen overflow-x-hidden maakt de y-as scrollbaar: dan schuift de rij
 // verticaal en tekent iOS witte vervagingen) + touch-pan-y, zodat de pagina zelf gewoon verticaal scrollt).
 export function HouseSection() {
   const reduce = useReducedMotion();
@@ -41,9 +41,50 @@ export function HouseSection() {
 
   function goTo(index: number) {
     const el = track.current;
-    const item = el?.children[index] as HTMLElement | undefined;
+    const clamped = Math.max(0, Math.min(ROOMS.length - 1, index));
+    const item = el?.children[clamped] as HTMLElement | undefined;
     if (!el || !item) return;
     el.scrollTo({ left: slideLeft(el, item), behavior: reduce ? "auto" : "smooth" });
+  }
+
+  /*
+   * Veegbewegingen (alleen touch, dus alleen mobiel/tablet; vanaf lg is de rij een raster).
+   * De rij blijft overflow-hidden (geen eigen scrollvak, dus geen witte iOS-vervaging en niet verticaal te slepen).
+   * Een horizontale veeg laat de rij met de vinger meebewegen en klikt daarna vast op de volgende of vorige kaart.
+   * Een verticale beweging laat de pagina gewoon scrollen (touch-pan-y).
+   */
+  const swipe = useRef<{ x: number; y: number; left: number; start: number; axis: "x" | "y" | null } | null>(null);
+
+  function onTouchStart(e: React.TouchEvent<HTMLUListElement>) {
+    const t = e.touches[0];
+    const el = track.current;
+    if (!el || e.touches.length > 1) return;
+    swipe.current = { x: t.clientX, y: t.clientY, left: el.scrollLeft, start: active, axis: null };
+  }
+
+  function onTouchMove(e: React.TouchEvent<HTMLUListElement>) {
+    const s = swipe.current;
+    const el = track.current;
+    if (!s || !el) return;
+    const dx = e.touches[0].clientX - s.x;
+    const dy = e.touches[0].clientY - s.y;
+    // Richting pas vastleggen na een paar pixels, zodat een licht schuine veeg niet verkeerd valt
+    if (!s.axis && Math.hypot(dx, dy) > 8) s.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    if (s.axis !== "x") return;
+    // Tijdens het slepen geen snap, anders springt de rij onder je vinger
+    el.style.scrollSnapType = "none";
+    el.scrollLeft = s.left - dx;
+  }
+
+  function onTouchEnd(e: React.TouchEvent<HTMLUListElement>) {
+    const s = swipe.current;
+    const el = track.current;
+    swipe.current = null;
+    if (!s || !el || s.axis !== "x") return;
+    const dx = e.changedTouches[0].clientX - s.x;
+    el.style.scrollSnapType = "";
+    // Vanaf 40 px één kaart verder of terug (gerekend vanaf de kaart waar de veeg begon), anders terug
+    goTo(dx < -40 ? s.start + 1 : dx > 40 ? s.start - 1 : s.start);
   }
 
   const fadeUp = (delay = 0) =>
@@ -93,10 +134,14 @@ export function HouseSection() {
         </dl>
       </motion.div>
 
-      {/* Mobiel: één veegbare rij. Vanaf lg: drie ruimtes naast elkaar, de andere twee eronder (6-koloms grid). */}
+      {/* Mobiel: één rij die je met pijlen, streepjes of een horizontale veeg bedient. Vanaf lg: 3 + 2 raster. */}
       <ul
         ref={track}
         onScroll={onScroll}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchEnd}
         aria-label="Ruimtes in het huis"
         className="relative -mx-[1.875rem] mt-8 flex snap-x snap-mandatory gap-3 overflow-hidden touch-pan-y px-[1.875rem] pb-1 [scrollbar-width:none] md:-mx-12 md:mt-12 md:px-12 xl:mt-14 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-x-4 lg:gap-y-10 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
       >
