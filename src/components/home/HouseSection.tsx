@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "../../lib/useMediaQuery";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Bathtub, Bed, Drop, SunHorizon, UsersThree, type Icon } from "@phosphor-icons/react";
 import { HOUSE_FACTS, ROOMS, type Room } from "../../lib/house";
@@ -15,76 +16,114 @@ const FACT_ICONS: Record<string, Icon> = {
 
 // Eerste sectie na de hero: gecentreerde kop met een vaag woord erachter (zelfde als Reviews), kerncijfers op
 // één regel eronder, daaronder de ruimtes: vanaf lg drie naast elkaar en de andere twee breder eronder.
-// Onder lg is die rij een carrousel: pijlen, streepjes en een horizontale veeg (eigen touch-afhandeling, niet de
-// native scroll: overflow-hidden op BEIDE assen (alleen overflow-x-hidden maakt de y-as scrollbaar: dan schuift de rij
-// verticaal en tekent iOS witte vervagingen) + touch-pan-y, zodat de pagina zelf gewoon verticaal scrollt).
+// Onder lg is die rij een schuifrij (transform, geen scroll): pijlen, streepjes en vegen per kaart. Geen eigen
+// scrollvak, dus geen witte iOS-vervaging en niet verticaal te slepen; touch-pan-y laat de pagina gewoon scrollen.
 export function HouseSection() {
   const reduce = useReducedMotion();
+  const carousel = useMediaQuery("(max-width: 1023.98px)"); // onder lg een schuifrij, daarboven een raster
+  const viewport = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLUListElement>(null);
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
 
-  // Startpositie van een kaart in de rij (kaarten klikken links vast, na de zijmarge)
-  const slideLeft = (el: HTMLUListElement, item: HTMLElement) => item.offsetLeft - parseFloat(getComputedStyle(el).paddingLeft);
+  /** Verschuiving (px) waarbij kaart i links uitlijnt; nooit verder dan het einde van de rij. */
+  const offsetFor = useCallback((i: number) => {
+    const el = track.current;
+    const vp = viewport.current;
+    const item = el?.children[i] as HTMLElement | undefined;
+    if (!el || !vp || !item) return 0;
+    const max = Math.max(0, el.scrollWidth - vp.clientWidth);
+    return -Math.min(item.offsetLeft - parseFloat(getComputedStyle(el).paddingLeft), max);
+  }, []);
 
-  // Actieve kaart = de kaart die het dichtst bij de linkerkant staat; helemaal rechts = de laatste
-  function onScroll() {
+  /** Zet de rij op een positie; animate = uitglijden (bij loslaten en knoppen), anders direct (vinger volgen). */
+  const setX = useCallback(
+    (x: number, animate: boolean) => {
+      const el = track.current;
+      if (!el) return;
+      el.style.transition = animate && !reduce ? "transform 520ms cubic-bezier(0.16, 1, 0.3, 1)" : "none";
+      el.style.transform = `translate3d(${x}px, 0, 0)`;
+    },
+    [reduce],
+  );
+
+  const goTo = useCallback(
+    (index: number) => {
+      const i = Math.max(0, Math.min(ROOMS.length - 1, index));
+      activeRef.current = i;
+      setActive(i);
+      setX(offsetFor(i), true);
+    },
+    [offsetFor, setX],
+  );
+
+  // Raster vanaf lg: geen verschuiving. Bij draaien of vergroten van het scherm de positie opnieuw uitrekenen.
+  useEffect(() => {
     const el = track.current;
     if (!el) return;
-    const items = Array.from(el.children) as HTMLElement[];
-    if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 2) return setActive(items.length - 1);
-    let nearest = 0;
-    items.forEach((item, i) => {
-      if (Math.abs(slideLeft(el, item) - el.scrollLeft) < Math.abs(slideLeft(el, items[nearest]) - el.scrollLeft)) nearest = i;
-    });
-    setActive(nearest);
-  }
-
-  function goTo(index: number) {
-    const el = track.current;
-    const clamped = Math.max(0, Math.min(ROOMS.length - 1, index));
-    const item = el?.children[clamped] as HTMLElement | undefined;
-    if (!el || !item) return;
-    el.scrollTo({ left: slideLeft(el, item), behavior: reduce ? "auto" : "smooth" });
-  }
+    if (!carousel) {
+      el.style.transform = "";
+      el.style.transition = "";
+      return;
+    }
+    const sync = () => setX(offsetFor(activeRef.current), false);
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [carousel, offsetFor, setX]);
 
   /*
-   * Veegbewegingen (alleen touch, dus alleen mobiel/tablet; vanaf lg is de rij een raster).
-   * De rij blijft overflow-hidden (geen eigen scrollvak, dus geen witte iOS-vervaging en niet verticaal te slepen).
-   * Een horizontale veeg laat de rij met de vinger meebewegen en klikt daarna vast op de volgende of vorige kaart.
-   * Een verticale beweging laat de pagina gewoon scrollen (touch-pan-y).
+   * Veegbewegingen (alleen touch). De rij volgt je vinger 1-op-1 via transform (geen scroll, dus geen witte
+   * iOS-vervaging en niet verticaal te slepen) en glijdt bij loslaten naar de volgende of vorige kaart.
+   * Telt als veeg: 40 px of meer, of een snelle korte flick. Voorbij de eerste/laatste kaart rekt hij licht mee.
+   * Verticale bewegingen laten de pagina scrollen (touch-pan-y).
    */
-  const swipe = useRef<{ x: number; y: number; left: number; start: number; axis: "x" | "y" | null } | null>(null);
+  const drag = useRef<{ x: number; y: number; base: number; axis: "x" | "y" | null; t: number; lastX: number; lastT: number; v: number } | null>(null);
+  const frame = useRef(0);
 
-  function onTouchStart(e: React.TouchEvent<HTMLUListElement>) {
+  function onTouchStart(e: React.TouchEvent) {
+    if (!carousel || e.touches.length > 1) return;
     const t = e.touches[0];
-    const el = track.current;
-    if (!el || e.touches.length > 1) return;
-    swipe.current = { x: t.clientX, y: t.clientY, left: el.scrollLeft, start: active, axis: null };
+    const now = performance.now();
+    drag.current = { x: t.clientX, y: t.clientY, base: offsetFor(activeRef.current), axis: null, t: now, lastX: t.clientX, lastT: now, v: 0 };
   }
 
-  function onTouchMove(e: React.TouchEvent<HTMLUListElement>) {
-    const s = swipe.current;
-    const el = track.current;
-    if (!s || !el) return;
-    const dx = e.touches[0].clientX - s.x;
-    const dy = e.touches[0].clientY - s.y;
-    // Richting pas vastleggen na een paar pixels, zodat een licht schuine veeg niet verkeerd valt
-    if (!s.axis && Math.hypot(dx, dy) > 8) s.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-    if (s.axis !== "x") return;
-    // Tijdens het slepen geen snap, anders springt de rij onder je vinger
-    el.style.scrollSnapType = "none";
-    el.scrollLeft = s.left - dx;
+  function onTouchMove(e: React.TouchEvent) {
+    const d = drag.current;
+    if (!d) return;
+    const t = e.touches[0];
+    const dx = t.clientX - d.x;
+    const dy = t.clientY - d.y;
+    if (!d.axis && Math.hypot(dx, dy) > 6) d.axis = Math.abs(dx) > Math.abs(dy) * 1.1 ? "x" : "y";
+    if (d.axis !== "x") return;
+    // Snelheid (px/ms), licht gedempt, voor een flick
+    const now = performance.now();
+    const dt = Math.max(1, now - d.lastT);
+    d.v = 0.7 * ((t.clientX - d.lastX) / dt) + 0.3 * d.v;
+    d.lastX = t.clientX;
+    d.lastT = now;
+    // Rek aan de randen: voorbij de eerste of laatste kaart beweegt de rij maar een derde mee
+    const min = offsetFor(ROOMS.length - 1);
+    let x = d.base + dx;
+    if (x > 0) x = x * 0.35;
+    else if (x < min) x = min + (x - min) * 0.35;
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => setX(x, false));
   }
 
-  function onTouchEnd(e: React.TouchEvent<HTMLUListElement>) {
-    const s = swipe.current;
-    const el = track.current;
-    swipe.current = null;
-    if (!s || !el || s.axis !== "x") return;
-    const dx = e.changedTouches[0].clientX - s.x;
-    el.style.scrollSnapType = "";
-    // Vanaf 40 px één kaart verder of terug (gerekend vanaf de kaart waar de veeg begon), anders terug
-    goTo(dx < -40 ? s.start + 1 : dx > 40 ? s.start - 1 : s.start);
+  function onTouchEnd(e: React.TouchEvent) {
+    const d = drag.current;
+    drag.current = null;
+    cancelAnimationFrame(frame.current);
+    if (!d || d.axis !== "x") return;
+    const dx = e.changedTouches[0].clientX - d.x;
+    const start = activeRef.current;
+    // Flick: snel bewogen (snelheid bij loslaten) of een korte veeg binnen 250 ms, minimaal 15 px
+    const quick = performance.now() - d.t < 250;
+    const flick = (Math.abs(d.v) > 0.3 || quick) && Math.abs(dx) > 15;
+    const dir = dx < -40 || (flick && dx < 0) ? 1 : dx > 40 || (flick && dx > 0) ? -1 : 0;
+    goTo(start + dir);
   }
 
   const fadeUp = (delay = 0) =>
@@ -135,27 +174,31 @@ export function HouseSection() {
       </motion.div>
 
       {/* Mobiel: één rij die je met pijlen, streepjes of een horizontale veeg bedient. Vanaf lg: 3 + 2 raster. */}
-      <ul
-        ref={track}
-        onScroll={onScroll}
+      <div
+        ref={viewport}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         onTouchCancel={onTouchEnd}
+        className="-mx-[1.875rem] mt-8 overflow-hidden touch-pan-y md:-mx-12 md:mt-12 xl:mt-14 lg:mx-0 lg:overflow-visible"
+      >
+      <ul
+        ref={track}
         aria-label="Ruimtes in het huis"
-        className="relative -mx-[1.875rem] mt-8 flex snap-x snap-mandatory gap-3 overflow-hidden touch-pan-y px-[1.875rem] pb-1 [scrollbar-width:none] md:-mx-12 md:mt-12 md:px-12 xl:mt-14 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-x-4 lg:gap-y-10 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+        className="flex gap-3 px-[1.875rem] pb-1 will-change-transform md:px-12 lg:grid lg:grid-cols-6 lg:gap-x-4 lg:gap-y-10 lg:px-0 lg:pb-0 lg:will-change-auto"
       >
         {ROOMS.map((room, i) => (
           <motion.li
             key={room.key}
             {...fadeUp(0.05 + i * 0.05)}
             aria-current={i === active ? "true" : undefined}
-            className={`w-[80%] shrink-0 snap-start scroll-ml-[1.875rem] sm:w-[45%] md:scroll-ml-12 lg:w-auto ${i < 3 ? "lg:col-span-2" : "lg:col-span-3"}`}
+            className={`w-[80%] shrink-0 sm:w-[45%] lg:w-auto ${i < 3 ? "lg:col-span-2" : "lg:col-span-3"}`}
           >
             <RoomCard room={room} wide={i >= 3} />
           </motion.li>
         ))}
       </ul>
+      </div>
 
       <div className="mt-6 flex items-center justify-center gap-4 lg:hidden">
         <NavButton label="Vorige ruimte" disabled={active === 0} onClick={() => goTo(active - 1)}>
