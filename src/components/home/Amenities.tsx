@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { useMediaQuery } from "../../lib/useMediaQuery";
 import { Plus } from "@phosphor-icons/react";
 import { SectionHeading } from "../page/SectionHeading";
 import { AMENITIES } from "../../lib/house";
@@ -10,7 +11,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
 // Voorzieningen als index: links één grote foto die meewisselt, rechts de vier groepen als genummerde regels.
 // De laatst geopende groep bepaalt de foto (ook als je hem weer dichtklapt). Op mobiel staat de foto in de open groep zelf.
 export function Amenities() {
-  const reduce = useReducedMotion();
+  // Mobiel: alleen sectiekoppen animeren, inhoud staat direct stil zodat scrollen rustig oogt
+  const mobile = useMediaQuery("(max-width: 767.98px)");
+  const reduce = useReducedMotion() || mobile;
   const id = useId();
   const [open, setOpen] = useState<number | null>(0);
   const [shown, setShown] = useState(0);

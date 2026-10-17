@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
+import { useMediaQuery } from "../../lib/useMediaQuery";
 import { ArrowRight } from "@phosphor-icons/react";
 import { WELLNESS } from "../../lib/house";
 import { WellnessCarousel } from "./WellnessCarousel";
@@ -9,7 +10,9 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 // Wellness De Zandloper: donkergroene kaart met de vaste sectiekop, daaronder een fotocarrousel en het verhaal.
 export function OwnersSection() {
-  const reduce = useReducedMotion();
+  // Mobiel: alleen sectiekoppen animeren, inhoud staat direct stil zodat scrollen rustig oogt
+  const mobile = useMediaQuery("(max-width: 767.98px)");
+  const reduce = useReducedMotion() || mobile;
   const { setWellness, goToBooking } = useBooking();
   const fadeUp = (delay = 0) =>
     reduce

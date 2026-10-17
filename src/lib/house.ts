@@ -3,12 +3,12 @@ import { asset } from "./config";
 // Inhoud uit de aangeleverde teksten en Booking.com. Foto's zijn de oude foto's van Booking.com.
 // TODO: klantdata. Vervangen door de nieuwe foto's van Marith (public/foto/accommodatie/).
 
-export const HOUSE_FACTS = [
+export const HOUSE_FACTS: { value: string; label: string; note?: string }[] = [
   { value: "2", label: "slaapkamers" },
   { value: "2", label: "badkamers" },
   { value: "4", label: "personen" },
   { value: "Eigen", label: "terras" },
-  { value: "Privé", label: "wellness" },
+  { value: "Privé", label: "wellness", note: "(optioneel)" },
 ];
 
 export type Room = { key: string; title: string; text: string; image: string; alt: string };

@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
+import { useMediaQuery } from "../../lib/useMediaQuery";
 import { MapPin } from "@phosphor-icons/react";
 import { ACTIVITIES } from "../../lib/surroundings";
 import { SectionHeading } from "../page/SectionHeading";
@@ -7,7 +8,9 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 // Wat er in de buurt is: donkergroene kaart met de vaste sectiekop en vier fotokaarten van echte plekken.
 export function NearbySection() {
-  const reduce = useReducedMotion();
+  // Mobiel: alleen sectiekoppen animeren, inhoud staat direct stil zodat scrollen rustig oogt
+  const mobile = useMediaQuery("(max-width: 767.98px)");
+  const reduce = useReducedMotion() || mobile;
   const items = ACTIVITIES.slice(0, 4);
 
   return (

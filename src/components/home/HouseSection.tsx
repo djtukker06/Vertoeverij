@@ -20,6 +20,7 @@ const FACT_ICONS: Record<string, Icon> = {
 // scrollvak, dus geen witte iOS-vervaging en niet verticaal te slepen; touch-pan-y laat de pagina gewoon scrollen.
 export function HouseSection() {
   const reduce = useReducedMotion();
+  const calm = useMediaQuery("(max-width: 767.98px)"); // mobiel: alleen de kop animeert, de fotorij staat stil
   const carousel = useMediaQuery("(max-width: 1023.98px)"); // onder lg een schuifrij, daarboven een raster
   const viewport = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLUListElement>(null);
@@ -161,11 +162,12 @@ export function HouseSection() {
           {HOUSE_FACTS.map((f) => {
             const FactIcon = FACT_ICONS[f.label];
             return (
-              <div key={f.label} className="flex items-center gap-2">
+              <div key={f.label} className="flex items-center gap-2 last:odd:col-span-2">
                 {FactIcon && <FactIcon size={18} aria-hidden className="text-forest-700" />}
                 <dt className="sr-only">{f.label}</dt>
                 <dd>
                   <span className="font-medium">{f.value}</span> {f.label}
+                  {f.note && <span className="text-forest-950/55"> {f.note}</span>}
                 </dd>
               </div>
             );
@@ -190,7 +192,7 @@ export function HouseSection() {
         {ROOMS.map((room, i) => (
           <motion.li
             key={room.key}
-            {...fadeUp(0.05 + i * 0.05)}
+            {...(calm ? {} : fadeUp(0.05 + i * 0.05))}
             aria-current={i === active ? "true" : undefined}
             className={`w-[80%] shrink-0 sm:w-[45%] lg:w-auto ${i < 3 ? "lg:col-span-2" : "lg:col-span-3"}`}
           >
